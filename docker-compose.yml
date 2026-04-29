@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dunhuang-backend
+    ports:
+      - "5204:5204"
+    environment:
+      - DB_HOST=192.168.1.108
+      - DB_PORT=3306
+      - DB_USER=chenwei
+      - DB_PASSWORD=761211
+      - DB_NAME=dunhuang_grottoes
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - backend-uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - dunhuang-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dunhuang-frontend
+    ports:
+      - "5104:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - dunhuang-network
+
+networks:
+  dunhuang-network:
+    driver: bridge
+
+volumes:
+  backend-uploads:
